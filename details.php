@@ -20,7 +20,7 @@ $id = 1;
 // qua facciamo una fetch dall'id passato tramite link
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$id]);
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -39,13 +39,15 @@ $row = $stmt->fetch(PDO::FETCH_ASSOC);
   <h1 class="text-center">Page details</h1>
 
   <div class="w-50 mx-auto">
-    <div class="card text-bg-light mb-3" style="max-width: 18rem;">
-      <div class="card-header">Header</div>
-      <div class="card-body">
-        <h5 class="card-title">Light card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      </div>
-    </div>
+    <?php
+    echo "<div class='card text-bg-light mb-3' >
+        <div class='card-header'>$user[username]</div>
+        <div class='card-body'>
+          <h5 class='card-title'>$user[mail]</h5>
+          <p class='card-text'>$user[password]</p>
+        </div>
+      </div>"
+    ?>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
