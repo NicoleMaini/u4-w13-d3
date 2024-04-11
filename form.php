@@ -20,13 +20,8 @@ $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 print_r($user);
 
-$stmt = $pdo->prepare("INSERT INTO dishes (name, price) VALUES (:belnome, :ottimoprezzo)");
-$stmt->execute([
-  'belnome' => 'Pizza fatta il pomeriggio',
-  'ottimoprezzo' => 0.01,
-]);
-
-if (isset($user['username'])) {
+// passaggio da rivedere che dovrebbe modificare l'elemento nella tabella, ricomparendo sui campi del form
+if (!isset($user['username'])) {
   $username = $user['username'] ?? '';
   $email = $user['mail'] ?? '';
   $password = $user['password'] ?? '';
@@ -47,6 +42,15 @@ if (isset($user['username'])) {
   };
 
   print_r($error);
+};
+// passaggio da rivedere che dovrebbe inserire un nuovo elemento nella tabella
+if (isset($user['username'])) {
+  $stmt = $pdo->prepare("INSERT INTO users (username, mail, password) VALUES (:username, :mail, :password)");
+  $stmt->execute([
+    'username' => '',
+    'mail' => '',
+    'password' => '',
+  ]);
 };
 
 
