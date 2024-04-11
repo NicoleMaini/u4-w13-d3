@@ -16,6 +16,7 @@ $pdo = new PDO($dsn, $user, $pass, $options);
 
 $stmt = $pdo->query('SELECT * FROM users');
 
+
 ?>
 
 <!doctype html>
@@ -52,8 +53,8 @@ $stmt = $pdo->query('SELECT * FROM users');
                          <td>$user[password]</td>;
                          <td>
                             <a href='http://localhost/u4-w13-d3/details.php/?id=$user[id]' class='btn btn-success'>Go</a>
-                            <a href='http://localhost/u4-w13-d3/details.php/?id=$user[id]' class='btn btn-warning'>Edit</a>
-                            <a href='http://localhost/u4-w13-d3/details.php/?id=$user[id]' class='btn btn-danger'>Delete</a>
+                            <a href='http://localhost/u4-w13-d3/form.php/?id=$user[id]' class='btn btn-warning'>Edit</a>
+                            <a href='http://localhost/u4-w13-d3/delete.php/?id=$user[id]' class='btn btn-danger'>Delete</a>
                         </td>
                         </tr>";
                 } ?>
