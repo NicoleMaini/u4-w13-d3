@@ -13,12 +13,12 @@ $options = [
 ];
 
 $pdo = new PDO($dsn, $user, $pass, $options);
-$id = 1;
+
 // url search param 
-// $id = $_GET['id'];
+$id = $_GET['id'];
 
 // qua facciamo una fetch dall'id passato tramite link
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?"); // ? placheholder sostitutivo per il valore, con il quale andremo a controllare il valore successivo
 $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -13,45 +13,59 @@ $options = [
 
 $pdo = new PDO($dsn, $user, $pass, $options);
 
-$id = $_GET['id'];
-// $stmt = $pdo->query("SELECT name FROM dishes WHERE id = $id"); // NON FARE MAI!!!!!!
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-print_r($user);
+$username = $_POST['username'] ?? '';
+$mail = $_POST['mail'] ?? '';
+$password = $_POST['password'] ?? '';
 
+echo '<pre>' . print_r($_POST, true) . '</pre>';
 // passaggio da rivedere che dovrebbe modificare l'elemento nella tabella, ricomparendo sui campi del form
-if (!isset($user['username'])) {
-  $username = $user['username'] ?? '';
-  $email = $user['mail'] ?? '';
-  $password = $user['password'] ?? '';
+if ($_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add') {
 
+  $id = $_GET['id'];
+  // $stmt = $pdo->query("SELECT name FROM dishes WHERE id = $id"); // NON FARE MAI!!!!!!
+  $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+  $stmt->execute([$id]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
   $error = [];
-
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // se il valore filter verifica che nel campo email non c'è un email corretta allora
-    $error['email'] = 'Please provide a valid email.';
-  };
-
   if (strlen($password) < 8) {
     $error['password'] = 'Please provide a valid password (min length 8).';
   };
 
   if ($error == []) {
-    header('location: /u4-w13/d2-success.php');
+    $stmt = $pdo->prepare("UPDATE users SET username = :username, mail = :mail, password = :password WHERE id = :id");
+    $stmt->execute([
+      'id' => $id,
+      'username' => $username,
+      'mail' => $mail,
+      'password' => $password,
+    ]);
+    header('location: http://localhost/u4-w13-d3/index.php');
   };
+} else {
 
-  print_r($error);
+  $error = [];
+  // if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // se il valore filter verifica che nel campo email non c'è un email corretta allora
+  //   $error['email'] = 'Please provide a valid email.';
+  // };
+  if (strlen($password) < 8) {
+    $error['password'] = 'Please provide a valid password (min length 8).';
+  };
+  if ($error == []) {
+    $stmt = $pdo->prepare("INSERT INTO users (username, mail, password) VALUES (:username, :mail, :password)");
+    $stmt->execute([
+      'username' => $username,
+      'mail' => $mail,
+      'password' => $password,
+    ]);
+    header('location: http://localhost/u4-w13-d3/index.php');
+  };
 };
 // passaggio da rivedere che dovrebbe inserire un nuovo elemento nella tabella
-if (isset($user['username'])) {
-  $stmt = $pdo->prepare("INSERT INTO users (username, mail, password) VALUES (:username, :mail, :password)");
-  $stmt->execute([
-    'username' => '',
-    'mail' => '',
-    'password' => '',
-  ]);
-};
+// if (isset($user['username'])) {
+// };
+
+
 
 
 ?>
@@ -67,7 +81,7 @@ if (isset($user['username'])) {
 </head>
 
 <body>
-  <h2>Modifica</h2>
+  <h2><?= $_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add' ?  'Modifica' :  'Aggiungi' ?></h2>
   <div class="d-flex justify-content-center mt-5">
     <form class="w-50" action="" method="post" novalidate>
       <div class="mb-3">
@@ -76,7 +90,7 @@ if (isset($user['username'])) {
       </div>
       <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" name="email" class="form-control is-invalid" id="exampleInputEmail1">
+        <input type="email" name="mail" class="form-control is-invalid" id="exampleInputEmail1">
         <div id="validationServer03Feedback" class="invalid-feedback"><?= $error['email'] ?? '' ?></div>
       </div>
       <div class="mb-3">
