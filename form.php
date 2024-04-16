@@ -1,23 +1,10 @@
 <?php
-$host = 'localhost';
-$db   = 'ifoa_user';
-$user = 'root';
-$pass = '';
-$dsn = "mysql:host=$host;dbname=$db";
-
-$options = [
-  PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-  PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
-$pdo = new PDO($dsn, $user, $pass, $options);
+include __DIR__ . '/includes/db.php';
 
 $username = $_POST['username'] ?? '';
 $mail = $_POST['mail'] ?? '';
 $password = $_POST['password'] ?? '';
 
-echo '<pre>' . print_r($_POST, true) . '</pre>';
 // passaggio da rivedere che dovrebbe modificare l'elemento nella tabella, ricomparendo sui campi del form
 if ($_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add') {
 
@@ -48,7 +35,7 @@ if ($_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add') {
   // if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // se il valore filter verifica che nel campo email non c'è un email corretta allora
   //   $error['email'] = 'Please provide a valid email.';
   // };
-  if (strlen($password) < 8) {
+  if (strlen($password) < 1) {
     $error['password'] = 'Please provide a valid password (min length 8).';
   };
   if ($error == []) {
@@ -56,53 +43,42 @@ if ($_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add') {
     $stmt->execute([
       'username' => $username,
       'mail' => $mail,
-      'password' => $password,
+      'password' => password_hash($password, PASSWORD_DEFAULT),
     ]);
-    header('location: http://localhost/u4-w13-d3/index.php');
+    header('location: http://localhost/u4-w13-d3/login.php');
   };
 };
 // passaggio da rivedere che dovrebbe inserire un nuovo elemento nella tabella
 // if (isset($user['username'])) {
 // };
 
-
-
+include __DIR__ . '/includes/pre.php'
 
 ?>
 
-<!doctype html>
-<html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bootstrap demo</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-
-<body>
-  <h2><?= $_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add' ?  'Modifica' :  'Aggiungi' ?></h2>
-  <div class="d-flex justify-content-center mt-5">
-    <form class="w-50" action="" method="post" novalidate>
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" name="username" id="exampleInputName1" aria-describedby="emailHelp" value=<?php $username ?>>
+<h2><?= $_SERVER["REQUEST_URI"] !== '/u4-w13-d3/form.php/add' ?  'Modifica' :  'Registrati' ?></h2>
+<div class="d-flex justify-content-center mt-5">
+  <form class="w-50" action="" method="post" novalidate>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" name="username" id="exampleInputName1" aria-describedby="emailHelp" value=<?= $username ?>>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label" value=<?= $mail ?>>Email address</label>
+      <input type="email" name="mail" class="form-control is-invalid" id="exampleInputEmail1">
+      <div id="validationServer03Feedback" class="invalid-feedback"><?= $error['email'] ?? '' ?></div>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label" value=<?= $password ?>>Password</label>
+      <input type="password" name="password" class="form-control <?= isset($error['password']) ? 'is-invalid' : '' ?> " id="exampleInputPassword1">
+      <div id="validationServer03Feedback" class="invalid-feedback"><?= $error['password'] ?? '' ?>
       </div>
-      <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" name="mail" class="form-control is-invalid" id="exampleInputEmail1">
-        <div id="validationServer03Feedback" class="invalid-feedback"><?= $error['email'] ?? '' ?></div>
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input type="password" name="password" class="form-control <?= isset($error['password']) ? 'is-invalid' : '' ?> " id="exampleInputPassword1">
-        <div id="validationServer03Feedback" class="invalid-feedback"><?= $error['password'] ?? '' ?>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
